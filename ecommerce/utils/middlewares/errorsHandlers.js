@@ -1,7 +1,12 @@
+const Sentry = require("@sentry/node");
 const { config } = require('../../config');
 
+Sentry.init({ dsn: "https://732b2b0d309e497f9009c776f1f080bb@o484262.ingest.sentry.io/5537191", });
+
 function logErrors(err, req, res, next) {
-    console.log(err.stack);
+    // Incluimos Sentry
+    Sentry.captureException(err);
+    console.error(err.stack);
     next(err);
 }
 
