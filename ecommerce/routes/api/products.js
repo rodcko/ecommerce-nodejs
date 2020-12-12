@@ -1,16 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const ProductsService = require('../../services/products');
+const validation = require('../../utils/middlewares/validationHandler');
+
+const { 
+    productIdSchema, 
+    productTagSchema, 
+    createProductSchema, 
+    updateProductSchema
+} = require('../../utils/schemas/products');
 
 const productService = new ProductsService();
 
 router.get('/', async function(req, res, next) {
     const { tags } = req.query;
-    //console.log('req', req);
+
+    console.log('req', req.query);
 
     try {
-        myUndefinedFunction();
-        //throw new Error('This is an error from the API');
         const products = await productService.getProducts({ tags });
 
         res.status(200).json({
@@ -24,6 +31,7 @@ router.get('/', async function(req, res, next) {
 
 router.get('/:productId', async function(req, res, next) {
     const { productId } = req.params;
+
     console.log("req", req.params);
 
     try {
@@ -38,33 +46,42 @@ router.get('/:productId', async function(req, res, next) {
     }
 });
 
-router.post('/', async function(req, res, next) {
+router.post('/', validation(createProductSchema), async function(
+    req, 
+    res, 
+    next
+) {
     const { body: product } = req;
-    console.log("req", req.body);
 
     try {
         const createdProduct = await productService.createProduct({ product });
 
         res.status(201).json({
             data: createdProduct,
-            message: 'products listed'
+            message: 'product created'
         });    
     } catch(err) {
         next(err);
     }
 });
 
-router.put('/:productId', async function(req, res, next) {
-    const { productId } = req.params;
-    const { body: product } = req;
-    console.log("req", req.params, req.body);
+router.put(
+    '/:productId', 
+    validation({ productId: productIdSchema }, "params"), 
+    validation(updateProductSchema), 
+    async function(req, res, next) {
+        const { productId } = req.params;
+        const { body: product } = req;
+        
+        console.log("req", req.params, req.body);
 
     try {
         const updatedProduct = await productService.updateProduct({ 
             productId, 
             product 
         });
-        res.status(200).json({
+        res.status(200).json(
+            {
             data: updatedProduct,
             message: 'products updated'
         });    
