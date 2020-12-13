@@ -1,14 +1,19 @@
 const express = require('express');
 const path = require("path");
+const boom = require("@hapi/boom");
 const productsRouter = require('./routes/views/products');
 const productsApiRouter = require('./routes/api/products');
+
 //const bodyParse = require('body-parse');
 
 const {
     logErrors,
+    wrapErrors,
     clientErrorHandler,
     errorHandler
 } = require('./utils/middlewares/errorsHandlers')
+
+const isRequestAjaxOrApi = require('./utils/isRequestAjaxOrApi');
 
 // app
 const app = express();
@@ -33,8 +38,21 @@ app.get('/', function(req, res) {
     res.redirect('/products');
 });
 
+app.use(function(req, res, next) {
+    if(isRequestAjaxOrApi(req)) {
+        const {
+            output: { statusCode, payload }
+        } = boom.notFound();
+
+        res.status(statusCode).json(payload);
+    }
+
+    res.status(404).render("404");
+});
+
 // error handlers
 app.use(logErrors);
+app.use(wrapErrors);
 app.use(clientErrorHandler);
 app.use(errorHandler);
 
