@@ -4,7 +4,7 @@ Proyecto de un **ECOMMERCE** para productos, tecnologias utilizadas:
 - Node.js / Express.js
 - Pug como template engine
 - Bulma.io como CSS Framework
-- Autenticacion con JWT / Passport.js y cifrado con bycrypt
+- Autenticacion con JWT / Passport.js y cifrado con bcrypt
 - Base de datos mongoDB
 - Sentry para el manejo de log de errores
 - Joi y Boom para manejo de errores (@hapi)
